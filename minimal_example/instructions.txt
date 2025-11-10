@@ -1,17 +1,10 @@
-aihwkit is easy to install via pip or conda.
+Please run setup.sh to:
+	1. Download libopenblas-dev
+	2. Install aihwkit to a Python virtual environment
+	3. Run minimal_example.py to test your installation
 
-I had some issues installing it in PyCharm since the package was unable to find my OpenBLAS implementation,
+I had some issues installing aihwkit in PyCharm since the package was unable to find my OpenBLAS implementation; 
 however, I had no issues installing/using it in Linux (specifically WSL in Windows).
-
-Note that you must have OpenBLAS v0.3.3+ installed on your system prior to package installation.
-
-The CPU version can be installed via
-	pip install aihwkit
-or
-	conda install -c conda-forge aihwkit
-however you would normally install a Python package (e.g., in a virtual environment).
-
-The build and runtime dependencies are as follows:
 
 BUILD DEPENDENCIES
 
@@ -30,5 +23,3 @@ numpy>=1.22,<2
 protobuf>=4.21.6
 tqdm
 mypy==0.991
-
-You can then run my minimal_example.py code to ensure the installation was successful.
