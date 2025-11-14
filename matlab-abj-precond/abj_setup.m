@@ -1,16 +1,17 @@
-function P_info = abj_setup(A, num_blocks)
+function P_info = abj_setup(A, num_blocks, rpu_settings)
 
 % Set up array of structs for the analog block Jacobi preconditioner.
 % Each cell contains the applicable index bounds [idx_s, idx_e] and an
 % analog matrix containing inv(A(idx_s:idx_e, idx_s:idx_e)).
 %
 % INPUTS
-%   A          | Coefficient matrix of linear system
-%   num_blocks | Number of diagonal blocks to use (Jacobi preconditioner
-%                uses num_blocks = n
+%   A            | Coefficient matrix of linear system
+%   num_blocks   | Number of diagonal blocks to use (Jacobi preconditioner
+%                  uses num_blocks = n
+%   rpu_settings | Settings struct for the RPU
 %
 % OUTPUTS
-%   P_info     | Array of structs containing analog preconditioner
+%   P_info       | Array of structs containing analog preconditioner
 %
 % Shikhar Shah (7 Nov 2025)
 % sshah80@emory.edu
@@ -19,8 +20,6 @@ P_info = cell(num_blocks, 1);
 n = size(A, 1);
 block_size = ceil(n / num_blocks);
 index_bounds = [1:block_size:n, n+1]';
-
-rpu_settings = RPU_Analog_Basic.Get_Baseline_Settings;
 
 for ix = 1:num_blocks
     P_info{ix}.idx_s = index_bounds(ix);
