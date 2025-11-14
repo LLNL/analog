@@ -35,7 +35,9 @@ def main():
     L = np.kron(L_onedim, I_onedim) + np.kron(I_onedim, L_onedim)
     n = L.shape[0]
 
-    X = sparse.rand(n, d, d_sparsity).toarray()
+    X = sparse.random(n, d, density=d_sparsity)
+    X.data = np.random.randn(X.nnz)
+    X = X.toarray()
     A = L + low_rank_coeff*np.dot(X, X.T) + diag_shift*np.eye(n)
     D = np.diag(np.diag(A)) # needed for digital Jacobi preconditioning
 

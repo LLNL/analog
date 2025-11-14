@@ -20,13 +20,15 @@ class ABJPreconditioner:
             idx_s, idx_e = index_bounds[ix], index_bounds[ix + 1]
             inv_diag_block = np.linalg.inv(matrix[idx_s:idx_e, idx_s:idx_e])
             scale = np.max(np.abs(inv_diag_block))
-            inv_diag_block = inv_diag_block / scale
-            self.abj_info.append(ABJBlock(AnalogMatrix(inv_diag_block.astype("float32"), rpu_config, realistic=False), scale, [idx_s, idx_e]))
+            inv_diag_block /= scale
+            self.abj_info.append(
+                ABJBlock(AnalogMatrix(inv_diag_block.astype("float32"), rpu_config, realistic=False), scale, [idx_s, idx_e])
+            )
 
     def apply(self, in_vector):
         n = in_vector.shape[0]
         in_vector_32 = in_vector.astype("float32")
-        out_vector = np.zeros(n, "float64")
+        out_vector = np.zeros(n, dtype="float64")
 
         for block in self.abj_info:
             idx_s, idx_e = block.bounds

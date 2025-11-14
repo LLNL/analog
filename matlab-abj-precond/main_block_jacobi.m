@@ -22,7 +22,7 @@ fprintf('Output noise = %.3f\n', rpu_settings.output_noise)
 
 L = full(delsq(numgrid('S', m+2)));
 n = size(L, 1);
-X = sprand(n, d, d_sparsity);
+X = sprandn(n, d, d_sparsity);
 A = L + X*X' + diag_shift*eye(n);
 b = randn(n, 1);
 b = b ./ norm(b);
