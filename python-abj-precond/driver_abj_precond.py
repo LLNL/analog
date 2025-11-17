@@ -21,12 +21,16 @@ def main():
     tol = 1e-12
     maxit = 200
 
+    # Load IdealizedPreset and match parameters to MATLAB simulator RPU_Analog_Basic.Get_Baseline_Settings
     rpu_config = IdealizedPreset() # idealized preset for testing and comparison to MATLAB code
     rpu_config.mapping.max_input_size = 2048
     rpu_config.mapping.max_output_size = 2048
-    rpu_config.forward.inp_noise = 0.01 # equal to MATLAB simulator value
-    rpu_config.forward.out_noise = 0.02 # equal to MATLAB simulator value
-    # MATLAB write_noise = 0.002
+    rpu_config.device.dw_min_dtod = 0.3 # MATLAB simulator, dw_min_dtod = 0.3
+    rpu_config.device.w_max_dtod = 0.2 # MATLAB simulator, weight_range_dtod = 0.2
+    rpu_config.device.w_min_dtod = 0.2 # MATLAB simulator, weight_range_dtod = 0.2
+    rpu_config.forward.inp_noise = 0.01 # MATLAB simulator, input_noise  = 0.01
+    rpu_config.forward.out_noise = 0.02 # MATLAB simulator, output_noise = 0.02
+    rpu_config.forward.w_noise = 0.002 # MATLAB simulator, write_noise = 0.002
 
     ## SET UP PROBLEM AND PRECONDITIONER ##
     # Kronecker sum for 2D Laplacian
