@@ -3,6 +3,7 @@ import scipy.sparse as sparse
 import pyamg.krylov as solver
 import matplotlib.pyplot as plt
 
+from fd_matrix import conv_diff_rxn_matrix
 import analog_block_jacobi as abj
 from analog_block_jacobi import ABJPreconditioner
 from block_jacobi import BlockJacobiPreconditioner
@@ -12,11 +13,9 @@ from aihwkit.simulator.presets import IdealizedPreset
 
 def main():
     ## PARAMETER SETUP ##
-    # A = Lap + low_rank_coeff*X*X^T + diag_shift*I
-    # where Lap is the 2D Laplacian of size n = m^2 and X is of size n x d with d_sparsity
-    m = 32
-    d = 10
-    d_sparsity = 0.10
+    m = 32 # number of finite difference points in one dimension
+    d = 10 # number of vectors for the low-rank update
+    d_sparsity = 0.10 # sparsity of the low-rank update vectors
     low_rank_coeff = 1.0
     diag_shift = 0.0
     num_blocks = [1, 4, 16, 64, m**2] # number of blocks to use in analog block Jacobi preconditioning
@@ -27,16 +26,13 @@ def main():
     rpu_config = abj.matlab_config(IdealizedPreset())
 
     ## SET UP PROBLEM AND PRECONDITIONER ##
-    # Kronecker sum for 2D Laplacian
-    L_onedim = np.diag(2*np.ones(m), 0) + np.diag(-1*np.ones(m-1), 1) + np.diag(-1*np.ones(m-1), -1)
-    I_onedim = np.eye(m)
-    L = np.kron(L_onedim, I_onedim) + np.kron(I_onedim, L_onedim)
-    n = L.shape[0]
+    A = conv_diff_rxn_matrix(m, 0.0, 0.0, diag_shift)
+    n = A.shape[0]
 
     X = sparse.random(n, d, density=d_sparsity)
     X.data = np.random.randn(X.nnz)
     X = X.toarray()
-    A = L + low_rank_coeff*np.dot(X, X.T) + diag_shift*np.eye(n)
+    A = A + low_rank_coeff*np.dot(X, X.T)
     D = np.diag(np.diag(A)) # needed for digital Jacobi preconditioning
 
     b = np.random.normal(size=(n,))
@@ -107,7 +103,7 @@ def main():
 
     plt.xlabel("Iteration number")
     plt.ylabel("Relative residual norm")
-    plt.title("$A = -\\nabla^2 + XX^T + \\alpha I$, n = %i, d = %i, $\\alpha$ = %.2f" % (n, d, diag_shift))
+    plt.title("$A = -\\nabla^2 + c \\cdot \\nabla + \\alpha I + XX^T$, n = %i, d = %i, $\\alpha$ = %.2f" % (n, d, diag_shift))
     plt.legend(bbox_to_anchor=(1.04, 0.5), loc="center left")
     plt.savefig("fgmres_abj_comparison.pdf", format="pdf", bbox_inches="tight")
 
