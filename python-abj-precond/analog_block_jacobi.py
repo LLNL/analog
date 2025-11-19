@@ -2,6 +2,18 @@ import math
 import numpy as np
 from aihwkit.linalg import AnalogMatrix
 
+def matlab_config(rpu_config):
+    rpu_config.device.dw_min = 0.001 # MATLAB simulator, dw_min_mean = 0.001
+    rpu_config.device.dw_min_dtod = 0.3 # MATLAB simulator, dw_min_dtod = 0.3
+    rpu_config.device.w_max_dtod = 0.2 # MATLAB simulator, weight_range_dtod = 0.2
+    rpu_config.device.w_min_dtod = 0.2 # MATLAB simulator, weight_range_dtod = 0.2
+    rpu_config.forward.inp_noise = 0.01 # MATLAB simulator, input_noise  = 0.01
+    rpu_config.forward.out_noise = 0.02 # MATLAB simulator, output_noise = 0.02
+    rpu_config.forward.w_noise = 0.002 # MATLAB simulator, write_noise = 0.002
+    rpu_config.mapping.max_input_size = 2048
+    rpu_config.mapping.max_output_size = 2048
+    return rpu_config
+
 class ABJBlock:
     def __init__(self, rpu, scale, bounds):
         self.rpu = rpu
@@ -19,6 +31,7 @@ class ABJPreconditioner:
         for ix in range(num_blocks):
             idx_s, idx_e = index_bounds[ix], index_bounds[ix + 1]
             inv_diag_block = np.linalg.inv(matrix[idx_s:idx_e, idx_s:idx_e])
+            # inv_diag_block[np.isclose(inv_diag_block, 0, atol=1e-2)] = 0
             scale = np.max(np.abs(inv_diag_block))
             inv_diag_block /= scale
             self.abj_info.append(
